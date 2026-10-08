@@ -8,11 +8,16 @@ include(FetchContent)
 
 add_library(chess_core
     src/board.cpp
+    src/evaluate.cpp
+    src/search.cpp
 )
 target_include_directories(chess_core PUBLIC src)
 
 add_executable(perft src/perft_main.cpp)
 target_link_libraries(perft PRIVATE chess_core)
+
+add_executable(bestmove src/search_main.cpp)
+target_link_libraries(bestmove PRIVATE chess_core)
 
 option(BUILD_TESTS "Build tests" ON)
 if (BUILD_TESTS)
@@ -23,6 +28,9 @@ if (BUILD_TESTS)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
 
-    add_executable(engine_tests tests/test_movegen.cpp)
+    add_executable(engine_tests
+        tests/test_movegen.cpp
+        tests/test_search.cpp
+    )
     target_link_libraries(engine_tests PRIVATE chess_core GTest::gtest_main)
 endif()
